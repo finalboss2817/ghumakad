@@ -1,9 +1,15 @@
+
 import { GoogleGenAI, Type } from "@google/genai";
 import { TravelPreferences, Itinerary } from "./types";
 
 export const generateItinerary = async (prefs: TravelPreferences): Promise<Itinerary> => {
-  // Always use the prescribed initialization format with process.env.API_KEY.
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  // Ensure we have a key before initializing
+  const apiKey = process.env.API_KEY;
+  if (!apiKey) {
+    throw new Error("Ghumakad Intelligence Key (API_KEY) is missing. Please configure environment variables.");
+  }
+
+  const ai = new GoogleGenAI({ apiKey });
 
   const response = await ai.models.generateContent({
     model: "gemini-3-flash-preview",
@@ -44,13 +50,12 @@ export const generateItinerary = async (prefs: TravelPreferences): Promise<Itine
     }
   });
 
-  /* response.text is a getter property, not a method. Access it directly. */
-  const result = JSON.parse(response.text);
+  const result = JSON.parse(response.text || '{}');
   return {
     ...result,
     id: Math.random().toString(36).substr(2, 9),
     interests: prefs.interests,
     createdAt: new Date().toISOString(),
-    is_verified: false // Initially AI generated
+    is_verified: false
   };
 };

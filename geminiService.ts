@@ -3,13 +3,11 @@ import { GoogleGenAI, Type } from "@google/genai";
 import { TravelPreferences, Itinerary } from "./types";
 
 export const generateItinerary = async (prefs: TravelPreferences): Promise<Itinerary> => {
-  // Ensure we have a key before initializing
+  // Use the key directly from the environment
   const apiKey = process.env.API_KEY;
-  if (!apiKey) {
-    throw new Error("Ghumakad Intelligence Key (API_KEY) is missing. Please configure environment variables.");
-  }
-
-  const ai = new GoogleGenAI({ apiKey });
+  
+  // Initialize AI - if key is missing, the SDK will throw a clear error we can catch
+  const ai = new GoogleGenAI({ apiKey: apiKey as string });
 
   const response = await ai.models.generateContent({
     model: "gemini-3-flash-preview",

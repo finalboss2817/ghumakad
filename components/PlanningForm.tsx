@@ -14,6 +14,7 @@ const PlanningForm: React.FC<PlanningFormProps> = ({ onSubmit }) => {
   const [budget, setBudget] = useState<BudgetType>('Medium');
   const [type, setType] = useState<TravelType>('Couple');
   const [interests, setInterests] = useState<string[]>([]);
+  const [pace, setPace] = useState<'Relaxed' | 'Balanced' | 'Fast'>('Balanced');
 
   const toggleInterest = (interest: string) => {
     setInterests(prev => 
@@ -73,6 +74,22 @@ const PlanningForm: React.FC<PlanningFormProps> = ({ onSubmit }) => {
         </div>
 
         <div className="space-y-6">
+          <label className="text-[11px] font-black text-slate-400 uppercase tracking-[0.4em] ml-2 block">Travel Pace (Intel Weight)</label>
+          <div className="grid grid-cols-3 gap-6">
+            {(['Relaxed', 'Balanced', 'Fast'] as const).map((p) => (
+              <button
+                key={p}
+                type="button"
+                onClick={() => setPace(p)}
+                className={`py-5 rounded-3xl font-black text-xs uppercase tracking-widest transition-all ${pace === p ? 'bg-orange-600 text-white shadow-2xl scale-105' : 'bg-slate-50 text-slate-400 hover:bg-slate-100'}`}
+              >
+                {p}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="space-y-6">
           <label className="text-[11px] font-black text-slate-400 uppercase tracking-[0.4em] ml-2 block">Budget Calibration</label>
           <div className="grid grid-cols-3 gap-6">
             {(['Low', 'Medium', 'Luxury'] as BudgetType[]).map((b) => (
@@ -108,7 +125,7 @@ const PlanningForm: React.FC<PlanningFormProps> = ({ onSubmit }) => {
           type="submit"
           className="w-full py-8 bg-emerald-950 text-white rounded-[2.5rem] font-black text-xs uppercase tracking-[0.4em] hover:bg-orange-600 transition-all shadow-2xl active:scale-95 group"
         >
-          INITIALIZE GENERATION <i className="fas fa-bolt ml-4 group-hover:text-yellow-400"></i>
+          GENERATE OPTIMIZED MASTERPLAN <i className="fas fa-bolt ml-4 group-hover:text-yellow-400"></i>
         </button>
       </div>
     </form>

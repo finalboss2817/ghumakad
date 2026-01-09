@@ -23,9 +23,14 @@
     }
   </style>
   <script>
-    // Safe shim for process.env that won't overwrite injected values
-    window.process = window.process || {};
-    window.process.env = window.process.env || {};
+    // Smart shim for process.env
+    // This ensures that the code 'process.env.API_KEY' doesn't throw a ReferenceError
+    // and correctly looks for injected keys from common build systems.
+    window.process = window.process || { env: {} };
+    // If the environment provided VITE_API_KEY but not API_KEY, bridge it
+    if (!window.process.env.API_KEY) {
+      window.process.env.API_KEY = window.process.env.VITE_API_KEY || "";
+    }
   </script>
 <script type="importmap">
 {

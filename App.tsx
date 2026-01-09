@@ -43,8 +43,9 @@ const App: React.FC = () => {
       
       let errorMessage = "Intelligence sync failed. Please check your connection to the Ghumakad network.";
       
+      // Check specifically for API Key errors which are common in browser environments
       if (error.message?.includes("API Key") || !process.env.API_KEY) {
-        errorMessage = "Ghumakad Intelligence Key (API_KEY) not detected. Please ensure your environment is configured correctly.";
+        errorMessage = "Ghumakad Intelligence Key (API_KEY) is missing or invalid. Please configure your project environment variables.";
       }
       
       alert(errorMessage);
@@ -117,7 +118,7 @@ const App: React.FC = () => {
                       <div>
                         <h4 className="text-xl md:text-2xl font-black text-emerald-950 mb-3 uppercase tracking-tight">Best Optimized Result</h4>
                         <p className="text-slate-500 font-bold text-base md:text-lg leading-relaxed">
-                          We cluster attractions geographically to ensure you spend more time exploring and less time in transit.
+                          We cluster attractions geographically through advanced AI logic to ensure you spend more time exploring and less time in transit.
                         </p>
                       </div>
                     </div>
@@ -163,7 +164,7 @@ const App: React.FC = () => {
                   <i className="fas fa-brain"></i> Meena Tech Core
                </div>
                <h1 className="text-5xl md:text-8xl font-black text-emerald-950 mb-8 tracking-tighter uppercase leading-none">Smart <span className="text-emerald-700">Planner</span></h1>
-               <p className="text-slate-400 text-xl md:text-2xl font-bold max-w-2xl mx-auto leading-relaxed">Input your destination. Receive the most geographically optimized masterplan.</p>
+               <p className="text-slate-400 text-xl md:text-2xl font-bold max-w-2xl mx-auto leading-relaxed">Input your destination. Receive the most geographically optimized masterplan available.</p>
             </div>
             <PlanningForm onSubmit={handleGenerate} />
           </div>
@@ -189,7 +190,8 @@ const App: React.FC = () => {
             {loading ? (
               <div className="flex flex-col items-center justify-center min-h-[600px]">
                 <div className="w-24 h-24 border-8 border-emerald-950 border-t-orange-500 rounded-full animate-spin"></div>
-                <h2 className="text-3xl md:text-5xl font-black text-emerald-950 mt-12 tracking-tighter uppercase">Optimizing Intel...</h2>
+                <h2 className="text-3xl md:text-5xl font-black text-emerald-950 mt-12 tracking-tighter uppercase text-center">Optimizing Masterplan...</h2>
+                <p className="text-slate-400 font-black uppercase tracking-[0.3em] mt-6 text-xs text-center">Calculating Most Efficient Route</p>
               </div>
             ) : currentItinerary ? (
               <ItineraryView 

@@ -23,14 +23,17 @@
     }
   </style>
   <script>
-    // Smart shim for process.env
-    // This ensures that the code 'process.env.API_KEY' doesn't throw a ReferenceError
-    // and correctly looks for injected keys from common build systems.
-    window.process = window.process || { env: {} };
-    // If the environment provided VITE_API_KEY but not API_KEY, bridge it
-    if (!window.process.env.API_KEY) {
-      window.process.env.API_KEY = window.process.env.VITE_API_KEY || "";
-    }
+    /**
+     * MEENA TECH ENVIRONMENT BRIDGE
+     * Ensures process.env.API_KEY is available regardless of the deployment platform's 
+     * specific variable naming conventions (Vite, Vercel, etc.)
+     */
+    (function() {
+      window.process = window.process || { env: {} };
+      const env = window.process.env;
+      // Bridge common naming patterns to the required API_KEY
+      env.API_KEY = env.API_KEY || env.VITE_API_KEY || "";
+    })();
   </script>
 <script type="importmap">
 {

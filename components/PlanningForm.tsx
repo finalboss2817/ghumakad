@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { TravelPreferences, BudgetType, TravelType } from '../types';
+import { TravelPreferences, BudgetType, TravelType, TravelPace } from '../types';
 
 interface PlanningFormProps {
   onSubmit: (prefs: TravelPreferences) => void;
@@ -14,7 +14,7 @@ const PlanningForm: React.FC<PlanningFormProps> = ({ onSubmit }) => {
   const [budget, setBudget] = useState<BudgetType>('Medium');
   const [type, setType] = useState<TravelType>('Couple');
   const [interests, setInterests] = useState<string[]>([]);
-  const [pace, setPace] = useState<'Relaxed' | 'Balanced' | 'Fast'>('Balanced');
+  const [pace, setPace] = useState<TravelPace>('Balanced');
 
   const toggleInterest = (interest: string) => {
     setInterests(prev => 
@@ -25,11 +25,11 @@ const PlanningForm: React.FC<PlanningFormProps> = ({ onSubmit }) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!destination) return alert("Please specify a target destination.");
-    onSubmit({ destination, days, budget, type, interests });
+    onSubmit({ destination, days, budget, type, interests, pace });
   };
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white p-12 md:p-16 rounded-[4rem] shadow-[0_60px_120px_-30px_rgba(0,0,0,0.1)] border border-slate-100">
+    <form onSubmit={handleSubmit} className="bg-white p-10 md:p-16 rounded-[4rem] shadow-[0_60px_120px_-30px_rgba(0,0,0,0.1)] border border-slate-100">
       <div className="space-y-12">
         <div className="space-y-4">
           <label className="text-[11px] font-black text-slate-400 uppercase tracking-[0.4em] ml-2 block">Target Destination</label>
@@ -37,7 +37,7 @@ const PlanningForm: React.FC<PlanningFormProps> = ({ onSubmit }) => {
              <i className="fas fa-location-dot absolute left-8 top-1/2 -translate-y-1/2 text-emerald-600 text-xl transition-transform group-focus-within:scale-125"></i>
              <input 
               type="text" 
-              placeholder="e.g. Ladakh, India or Tuscany, Italy"
+              placeholder="e.g. Kyoto, Japan or Amalfi Coast, Italy"
               value={destination}
               onChange={(e) => setDestination(e.target.value)}
               className="w-full pl-16 pr-8 py-6 rounded-3xl bg-slate-50 border border-slate-100 focus:ring-4 focus:ring-emerald-500/10 outline-none transition-all font-bold text-lg text-emerald-950 placeholder:text-slate-300"
@@ -74,19 +74,22 @@ const PlanningForm: React.FC<PlanningFormProps> = ({ onSubmit }) => {
         </div>
 
         <div className="space-y-6">
-          <label className="text-[11px] font-black text-slate-400 uppercase tracking-[0.4em] ml-2 block">Travel Pace (Intel Weight)</label>
+          <label className="text-[11px] font-black text-slate-400 uppercase tracking-[0.4em] ml-2 block">Logistical Pace (Smart Optimization)</label>
           <div className="grid grid-cols-3 gap-6">
-            {(['Relaxed', 'Balanced', 'Fast'] as const).map((p) => (
+            {(['Relaxed', 'Balanced', 'Fast'] as TravelPace[]).map((p) => (
               <button
                 key={p}
                 type="button"
                 onClick={() => setPace(p)}
-                className={`py-5 rounded-3xl font-black text-xs uppercase tracking-widest transition-all ${pace === p ? 'bg-orange-600 text-white shadow-2xl scale-105' : 'bg-slate-50 text-slate-400 hover:bg-slate-100'}`}
+                className={`py-5 rounded-3xl font-black text-[10px] uppercase tracking-widest transition-all ${pace === p ? 'bg-orange-600 text-white shadow-2xl scale-105' : 'bg-slate-50 text-slate-400 hover:bg-slate-100'}`}
               >
                 {p}
               </button>
             ))}
           </div>
+          <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest text-center">
+            {pace === 'Relaxed' ? 'Prioritizes rest & deep immersion' : pace === 'Fast' ? 'Covers maximum ground geographically' : 'The perfect Ghumakad balance'}
+          </p>
         </div>
 
         <div className="space-y-6">
@@ -97,7 +100,7 @@ const PlanningForm: React.FC<PlanningFormProps> = ({ onSubmit }) => {
                 key={b}
                 type="button"
                 onClick={() => setBudget(b)}
-                className={`py-5 rounded-3xl font-black text-xs uppercase tracking-widest transition-all ${budget === b ? 'bg-emerald-950 text-white shadow-2xl scale-105' : 'bg-slate-50 text-slate-400 hover:bg-slate-100'}`}
+                className={`py-5 rounded-3xl font-black text-[10px] uppercase tracking-widest transition-all ${budget === b ? 'bg-emerald-950 text-white shadow-2xl scale-105' : 'bg-slate-50 text-slate-400 hover:bg-slate-100'}`}
               >
                 {b}
               </button>
@@ -113,7 +116,7 @@ const PlanningForm: React.FC<PlanningFormProps> = ({ onSubmit }) => {
                 key={i}
                 type="button"
                 onClick={() => toggleInterest(i)}
-                className={`px-8 py-3.5 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all border-2 ${interests.includes(i) ? 'bg-orange-50 text-orange-600 border-orange-200' : 'bg-white text-slate-400 border-slate-100 hover:border-emerald-200'}`}
+                className={`px-8 py-3.5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all border-2 ${interests.includes(i) ? 'bg-orange-50 text-orange-600 border-orange-200' : 'bg-white text-slate-400 border-slate-100 hover:border-emerald-200'}`}
               >
                 {i}
               </button>

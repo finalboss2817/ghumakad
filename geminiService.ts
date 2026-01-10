@@ -3,8 +3,8 @@ import { GoogleGenAI, Type } from "@google/genai";
 import { TravelPreferences, Itinerary } from "./types";
 
 /**
- * Ghumakad Intelligence Sync
- * Generates highly optimized, geographically clustered travel itineraries.
+ * Ghumakad Intelligence Core
+ * Focused on "Best Optimized Result" via Geographical Clustering.
  */
 export const generateItinerary = async (prefs: TravelPreferences): Promise<Itinerary> => {
   // STRICT REQUIREMENT: Initializing AI with named parameter apiKey from process.env.API_KEY
@@ -12,23 +12,23 @@ export const generateItinerary = async (prefs: TravelPreferences): Promise<Itine
 
   const response = await ai.models.generateContent({
     model: "gemini-3-flash-preview",
-    contents: `You are the Lead Logistics Engineer at Ghumakad (a Meena Technologies company). 
-    Your mission is to generate the "Best Optimized Result" for a ${prefs.days}-day trip to ${prefs.destination}.
+    contents: `You are the Lead Logistics Engineer at Ghumakad (Meena Technologies). 
+    Task: Generate a highly "Practical" and "Logistically Optimized" itinerary for ${prefs.days} days in ${prefs.destination}.
     
-    Travel Details:
-    - Persona: ${prefs.type}
-    - Budget Level: ${prefs.budget}
-    - Interests: ${prefs.interests.join(', ')}
+    Travel Persona: ${prefs.type}
+    Budget: ${prefs.budget}
+    Interests: ${prefs.interests.join(', ')}
+    Travel Pace: ${prefs.pace || 'Balanced'}
     
-    OPTIMIZATION PROTOCOLS:
-    1. GEOGRAPHICAL CLUSTERING: Group all locations for Day 1, Day 2, etc., based on their physical proximity. 
-    2. ROUTE EFFICIENCY: Sequence activities (Morning -> Afternoon -> Evening) to create a linear path, minimizing back-and-forth travel.
-    3. GHUMAKAD GEMS: Include one "Verified Gem" (hidden spot) per day that is within 15 minutes of the main activities.
-    4. BUFFER TIME: Ensure the schedule is realistic (no more than 3 major locations per day).
+    CORE OPTIMIZATION RULES:
+    1. GEOGRAPHICAL CLUSTERING: Ensure Day 1 activities are in one neighborhood, Day 2 in another nearby area, etc. 
+    2. MINIMIZE COMMUTE: Sequence (Morning -> Afternoon -> Evening) to ensure a smooth, one-way path without backtracking.
+    3. REALISTIC BUFFERS: If pace is 'Relaxed', include more rest. If 'Fast', maximize sights but keep them physically close.
+    4. GHUMAKAD GEMS: Include 1 hyper-local hidden spot per day that is within walking distance of the main highlights.
     
-    OUTPUT: Valid JSON based on the provided schema.`,
+    Return the result as clean JSON.`,
     config: {
-      systemInstruction: "You are Ghumakad-AI, a specialist in hyper-efficient travel logistics. Your itineraries are famous for their perfect pacing and logical flow. Never suggest places that are more than 45 minutes apart in a single half-day block.",
+      systemInstruction: "You are Ghumakad-AI. You prioritize route efficiency. You never suggest places that require cross-city travel in a single afternoon block. You are precise, practical, and verified.",
       responseMimeType: "application/json",
       responseSchema: {
         type: Type.OBJECT,
@@ -43,17 +43,17 @@ export const generateItinerary = async (prefs: TravelPreferences): Promise<Itine
               type: Type.OBJECT,
               properties: {
                 day: { type: Type.NUMBER },
-                morning: { type: Type.STRING, description: "Geographically starting point of the day" },
-                afternoon: { type: Type.STRING, description: "Mid-day activity near the morning location" },
-                evening: { type: Type.STRING, description: "Closing activity near the afternoon location" },
-                food: { type: Type.ARRAY, items: { type: Type.STRING }, description: "Localized food suggestions for that area" },
-                travelTips: { type: Type.STRING, description: "A logistical secret or hidden 'Ghumakad Gem' relevant to this day's area." }
+                morning: { type: Type.STRING },
+                afternoon: { type: Type.STRING },
+                evening: { type: Type.STRING },
+                food: { type: Type.ARRAY, items: { type: Type.STRING } },
+                travelTips: { type: Type.STRING, description: "Logistical advice or hidden Gem nearby" }
               },
               required: ["day", "morning", "afternoon", "evening", "food", "travelTips"]
             }
           },
-          mustKnowTips: { type: Type.ARRAY, items: { type: Type.STRING }, description: "3 Essential survival tips for this specific destination" },
-          commonMistakes: { type: Type.ARRAY, items: { type: Type.STRING }, description: "3 Mistakes tourists make that 'Ghumakads' avoid" }
+          mustKnowTips: { type: Type.ARRAY, items: { type: Type.STRING } },
+          commonMistakes: { type: Type.ARRAY, items: { type: Type.STRING } }
         },
         required: ["destination", "totalDays", "travelType", "budget", "days", "mustKnowTips", "commonMistakes"]
       }
@@ -61,9 +61,7 @@ export const generateItinerary = async (prefs: TravelPreferences): Promise<Itine
   });
 
   const textOutput = response.text;
-  if (!textOutput) {
-    throw new Error("Ghumakad Intelligence failed to sync. Empty response.");
-  }
+  if (!textOutput) throw new Error("Ghumakad Sync Error: No data received.");
 
   const result = JSON.parse(textOutput);
   return {

@@ -22,19 +22,6 @@
       .text-7xl { font-size: 2.5rem !important; }
     }
   </style>
-  <script>
-    /**
-     * MEENA TECH ENVIRONMENT BRIDGE
-     * Ensures process.env.API_KEY is available regardless of the deployment platform's 
-     * specific variable naming conventions (Vite, Vercel, etc.)
-     */
-    (function() {
-      window.process = window.process || { env: {} };
-      const env = window.process.env;
-      // Bridge common naming patterns to the required API_KEY
-      env.API_KEY = env.API_KEY || env.VITE_API_KEY || "";
-    })();
-  </script>
 <script type="importmap">
 {
   "imports": {

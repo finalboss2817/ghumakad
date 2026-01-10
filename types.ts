@@ -1,6 +1,7 @@
 
 export type BudgetType = 'Low' | 'Medium' | 'Luxury';
 export type TravelType = 'Solo' | 'Couple' | 'Friends' | 'Family';
+export type TravelPace = 'Relaxed' | 'Balanced' | 'Fast';
 
 export interface DayPlan {
   day: number;
@@ -33,6 +34,7 @@ export interface TravelPreferences {
   budget: BudgetType;
   type: TravelType;
   interests: string[];
+  pace?: TravelPace;
 }
 
 export interface Post {

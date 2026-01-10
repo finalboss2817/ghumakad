@@ -39,16 +39,12 @@ const App: React.FC = () => {
       const iten = await generateItinerary(prefs);
       setCurrentItinerary(iten);
     } catch (error: any) {
-      console.error("Ghumakad Intelligence Error:", error);
-      
-      let errorMessage = "Intelligence sync failed. Please check your connection to the Ghumakad network.";
-      
-      // Check specifically for API Key errors which are common in browser environments
-      if (error.message?.includes("API Key") || !process.env.API_KEY) {
-        errorMessage = "Ghumakad Intelligence Key (API_KEY) is missing or invalid. Please configure your project environment variables.";
+      console.error("Ghumakad Sync Error:", error);
+      let msg = "Intelligence sync failed. Please check your network.";
+      if (error.message?.includes("API Key")) {
+        msg = "Travel Intel Key (API_KEY) not detected. Please check your environment variables.";
       }
-      
-      alert(errorMessage);
+      alert(msg);
       setView('plan');
     } finally {
       setLoading(false);
@@ -191,7 +187,7 @@ const App: React.FC = () => {
               <div className="flex flex-col items-center justify-center min-h-[600px]">
                 <div className="w-24 h-24 border-8 border-emerald-950 border-t-orange-500 rounded-full animate-spin"></div>
                 <h2 className="text-3xl md:text-5xl font-black text-emerald-950 mt-12 tracking-tighter uppercase text-center">Optimizing Masterplan...</h2>
-                <p className="text-slate-400 font-black uppercase tracking-[0.3em] mt-6 text-xs text-center">Calculating Most Efficient Route</p>
+                <p className="text-slate-400 font-black uppercase tracking-[0.3em] mt-6 text-xs text-center">Clustering Route Efficiently</p>
               </div>
             ) : currentItinerary ? (
               <ItineraryView 

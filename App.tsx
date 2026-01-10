@@ -13,21 +13,14 @@ import AuthModal from './components/AuthModal';
 import Footer from './components/Footer';
 import SocialFeed from './components/SocialFeed';
 
-// window.aistudio is already declared by the environment with the AIStudio type.
-// We remove the local declaration to avoid type conflicts and identical modifier errors.
-
 const App: React.FC = () => {
   const [session, setSession] = useState<any>(null);
   const [view, setView] = useState<'home' | 'plan' | 'itinerary' | 'blogs' | 'profile' | 'feed'>('home');
   const [loading, setLoading] = useState(false);
   const [showAuth, setShowAuth] = useState(false);
   const [currentItinerary, setCurrentItinerary] = useState<Itinerary | null>(null);
-  const [hasKey, setHasKey] = useState<boolean | null>(null);
 
   useEffect(() => {
-    // Initial key check
-    checkKey();
-
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
     });
@@ -39,62 +32,24 @@ const App: React.FC = () => {
     return () => subscription.unsubscribe();
   }, []);
 
-  const checkKey = async () => {
-    try {
-      // @ts-ignore - aistudio is injected by the environment
-      const selected = await window.aistudio.hasSelectedApiKey();
-      setHasKey(selected);
-    } catch (e) {
-      // Fallback if window.aistudio isn't present
-      setHasKey(!!process.env.API_KEY);
-    }
-  };
-
-  const handleOpenKeyPicker = async () => {
-    try {
-      // @ts-ignore - aistudio is injected by the environment
-      await window.aistudio.openSelectKey();
-      // To prevent a race condition, assume success and proceed
-      setHasKey(true);
-    } catch (e) {
-      console.error("Failed to trigger key picker:", e);
-    }
-  };
-
   const handleGenerate = async (prefs: TravelPreferences) => {
-    // Ensure key is present before proceeding
-    let keySelected = false;
-    try {
-      // @ts-ignore - aistudio is injected by the environment
-      keySelected = await window.aistudio.hasSelectedApiKey();
-    } catch (e) {
-      keySelected = !!process.env.API_KEY;
-    }
-
-    if (!keySelected && !process.env.API_KEY) {
-      const confirm = window.confirm("Ghumakad Intelligence requires an active API Key. Would you like to connect now?");
-      if (confirm) {
-        await handleOpenKeyPicker();
-      } else {
-        return;
-      }
-    }
-
     setLoading(true);
     setView('itinerary');
+    
     try {
       const iten = await generateItinerary(prefs);
       setCurrentItinerary(iten);
     } catch (error: any) {
       console.error("Ghumakad Intelligence Error:", error);
       
-      // If the request fails with "Requested entity was not found", reset the key selection state
-      if (error.message?.includes("not found") || error.message?.includes("API Key") || error.message?.includes("Requested entity was not found")) {
-        alert("Intelligence connection lost or invalid. Please re-select your API key.");
-        await handleOpenKeyPicker();
-      } else {
-        alert("Intelligence sync failed. Please check your network and try again.");
+      let errorMessage = "Intelligence sync failed. Please check your network.";
+      
+      // Checking for the API Key error explicitly
+      if (error.message?.includes("API Key") || error.message?.includes("key") || !process.env.API_KEY) {
+        errorMessage = "Ghumakad Intelligence Error: API Key is missing or invalid in this environment.";
       }
+      
+      alert(errorMessage);
       setView('plan');
     } finally {
       setLoading(false);
@@ -164,7 +119,7 @@ const App: React.FC = () => {
                       <div>
                         <h4 className="text-xl md:text-2xl font-black text-emerald-950 mb-3 uppercase tracking-tight">Best Optimized Result</h4>
                         <p className="text-slate-500 font-bold text-base md:text-lg leading-relaxed">
-                          We cluster attractions geographically through masterframe AI logic to ensure you spend more time exploring and less time in transit.
+                          We cluster attractions geographically through standard-tier AI to ensure you spend more time exploring and less time in transit.
                         </p>
                       </div>
                     </div>
@@ -173,7 +128,7 @@ const App: React.FC = () => {
                 
                 <div className="relative mt-12 lg:mt-0">
                   <div className="bg-white rounded-[3rem] md:rounded-[5rem] p-10 md:p-16 shadow-[0_80px_160px_-40px_rgba(0,0,0,0.15)] border border-slate-100 relative z-10 overflow-hidden">
-                    <h3 className="text-3xl md:text-4xl font-black text-emerald-950 mb-10 uppercase tracking-tighter leading-tight">Ghumakad Ecosystem <br/><span className="text-slate-300">v1.3 Intel Active</span></h3>
+                    <h3 className="text-3xl md:text-4xl font-black text-emerald-950 mb-10 uppercase tracking-tighter leading-tight">Ghumakad Ecosystem <br/><span className="text-slate-300">v1.5 Intel Active</span></h3>
                     <div className="space-y-10">
                       <div className="flex items-center justify-between p-4 bg-emerald-50 rounded-2xl">
                         <div className="flex items-center gap-6">
@@ -185,14 +140,6 @@ const App: React.FC = () => {
                         </div>
                         <i className="fas fa-check-circle text-emerald-500"></i>
                       </div>
-                      {!hasKey && (
-                        <button 
-                          onClick={handleOpenKeyPicker}
-                          className="w-full py-4 bg-orange-600 text-white rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-xl hover:bg-orange-700 transition-colors flex items-center justify-center gap-3"
-                        >
-                          <i className="fas fa-key"></i> Unlock Master Intelligence
-                        </button>
-                      )}
                     </div>
                   </div>
                 </div>
@@ -246,11 +193,6 @@ const App: React.FC = () => {
                 <div className="w-24 h-24 border-8 border-emerald-950 border-t-orange-500 rounded-full animate-spin"></div>
                 <h2 className="text-3xl md:text-5xl font-black text-emerald-950 mt-12 tracking-tighter uppercase text-center">Optimizing Masterplan...</h2>
                 <p className="text-slate-400 font-black uppercase tracking-[0.3em] mt-6 text-xs text-center italic">Synchronizing Routes Geographically</p>
-                <div className="mt-12 flex gap-4">
-                  <div className="w-3 h-3 bg-emerald-900 rounded-full animate-bounce"></div>
-                  <div className="w-3 h-3 bg-emerald-700 rounded-full animate-bounce [animation-delay:0.2s]"></div>
-                  <div className="w-3 h-3 bg-emerald-500 rounded-full animate-bounce [animation-delay:0.4s]"></div>
-                </div>
               </div>
             ) : currentItinerary ? (
               <ItineraryView 

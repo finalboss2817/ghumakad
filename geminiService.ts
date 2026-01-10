@@ -7,13 +7,14 @@ import { TravelPreferences, Itinerary } from "./types";
  * Focused on "Best Optimized Result" via Geographical Clustering.
  */
 export const generateItinerary = async (prefs: TravelPreferences): Promise<Itinerary> => {
-  // Creating a fresh instance right before call ensures we use the most up-to-date injected key
+  // STRICT COMPLIANCE: Use named parameter 'apiKey' with 'process.env.API_KEY'.
+  // We initialize inside the call to capture the environment state accurately.
   const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
-  // Upgrading to gemini-3-pro-preview for complex reasoning task (logistics optimization)
+  // Using gemini-3-flash-preview for high performance and compatibility
   const response = await ai.models.generateContent({
-    model: "gemini-3-pro-preview",
-    contents: `You are the Lead Logistics Engineer at Ghumakad (Meena Technologies). 
+    model: "gemini-3-flash-preview",
+    contents: `You are the Lead Logistics Engineer at Ghumakad. 
     Task: Generate a "Best Optimized Result" itinerary for ${prefs.days} days in ${prefs.destination}.
     
     Travel Persona: ${prefs.type}
@@ -21,14 +22,14 @@ export const generateItinerary = async (prefs: TravelPreferences): Promise<Itine
     Interests: ${prefs.interests.join(', ')}
     Travel Pace: ${prefs.pace || 'Balanced'}
     
-    OPTIMIZATION MANDATE:
-    1. GEOGRAPHICAL CLUSTERING: All activities in a single day MUST be within the same neighborhood or district. 
-    2. TRANSIT EFFICIENCY: Sequence activities (Morning -> Afternoon -> Evening) to form a logical, one-way travel path.
-    3. HIDDEN GEMS: Include one "Ghumakad Gem" per day that is within 15 minutes of the main highlights.
+    CRITICAL OPTIMIZATION RULES:
+    1. GEOGRAPHICAL CLUSTERING: Group all activities for a single day into the same neighborhood or district.
+    2. ROUTE EFFICIENCY: Sequence activities (Morning -> Afternoon -> Evening) to create a linear path without backtracking.
+    3. HIDDEN GEMS: Include one "Verified Gem" (hidden local spot) per day located near the main cluster.
     
-    Output the plan in clean JSON format.`,
+    Return the plan in clean JSON.`,
     config: {
-      systemInstruction: "You are Ghumakad-AI. You prioritize route efficiency over quantity. You never suggest activities that are more than 45 minutes apart in a single day block. Your output is practical, realistic, and logistically sound.",
+      systemInstruction: "You are Ghumakad-AI. You are an expert in travel logistics. You prioritize route efficiency over the number of sights. You group attractions by proximity to ensure zero wasted transit time.",
       responseMimeType: "application/json",
       responseSchema: {
         type: Type.OBJECT,
@@ -47,7 +48,7 @@ export const generateItinerary = async (prefs: TravelPreferences): Promise<Itine
                 afternoon: { type: Type.STRING },
                 evening: { type: Type.STRING },
                 food: { type: Type.ARRAY, items: { type: Type.STRING } },
-                travelTips: { type: Type.STRING, description: "Geographical optimization tip or hidden Gem nearby" }
+                travelTips: { type: Type.STRING, description: "Logistical advice on navigating this specific day's cluster." }
               },
               required: ["day", "morning", "afternoon", "evening", "food", "travelTips"]
             }
@@ -60,21 +61,15 @@ export const generateItinerary = async (prefs: TravelPreferences): Promise<Itine
     }
   });
 
-  // response.text is a property, not a method
   const textOutput = response.text;
-  if (!textOutput) throw new Error("Ghumakad Sync Error: Empty response from masterframe.");
+  if (!textOutput) throw new Error("Ghumakad Intelligence Sync: No data received.");
 
-  try {
-    const result = JSON.parse(textOutput);
-    return {
-      ...result,
-      id: Math.random().toString(36).substr(2, 9),
-      interests: prefs.interests,
-      createdAt: new Date().toISOString(),
-      is_verified: true
-    };
-  } catch (err) {
-    console.error("JSON Parsing Error from Ghumakad Intel:", err);
-    throw new Error("Ghumakad Sync Error: Intelligence core returned unparseable data.");
-  }
+  const result = JSON.parse(textOutput);
+  return {
+    ...result,
+    id: Math.random().toString(36).substr(2, 9),
+    interests: prefs.interests,
+    createdAt: new Date().toISOString(),
+    is_verified: true
+  };
 };

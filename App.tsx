@@ -42,10 +42,10 @@ const App: React.FC = () => {
     } catch (error: any) {
       console.error("Ghumakad Intelligence Error:", error);
       
-      let errorMessage = "Intelligence sync failed. Ensure your Supabase Edge Function 'generate-itinerary' is deployed and its secrets are configured.";
+      let errorMessage = "Intelligence sync failed. Please check your network connection.";
       
-      if (error.message?.includes("functions_http_error")) {
-        errorMessage = "Edge Function Error: The server encountered an issue processing your request. Check your Supabase logs.";
+      if (error.message?.includes("API Key") || error.message?.includes("key")) {
+        errorMessage = "Ghumakad Error: The API Key (process.env.API_KEY) is missing or invalid in this environment.";
       }
       
       alert(errorMessage);
@@ -118,7 +118,7 @@ const App: React.FC = () => {
                       <div>
                         <h4 className="text-xl md:text-2xl font-black text-emerald-950 mb-3 uppercase tracking-tight">Best Optimized Result</h4>
                         <p className="text-slate-500 font-bold text-base md:text-lg leading-relaxed">
-                          We cluster attractions geographically through server-side intelligence to ensure you spend more time exploring and less time in transit.
+                          We cluster attractions geographically using high-performance AI to ensure you spend more time exploring and less time in transit.
                         </p>
                       </div>
                     </div>
@@ -127,14 +127,14 @@ const App: React.FC = () => {
                 
                 <div className="relative mt-12 lg:mt-0">
                   <div className="bg-white rounded-[3rem] md:rounded-[5rem] p-10 md:p-16 shadow-[0_80px_160px_-40px_rgba(0,0,0,0.15)] border border-slate-100 relative z-10 overflow-hidden">
-                    <h3 className="text-3xl md:text-4xl font-black text-emerald-950 mb-10 uppercase tracking-tighter leading-tight">Ghumakad Ecosystem <br/><span className="text-slate-300">v1.6 Server Intel Active</span></h3>
+                    <h3 className="text-3xl md:text-4xl font-black text-emerald-950 mb-10 uppercase tracking-tighter leading-tight">Ghumakad Ecosystem <br/><span className="text-slate-300">v1.7 Intel Active</span></h3>
                     <div className="space-y-10">
                       <div className="flex items-center justify-between p-4 bg-emerald-50 rounded-2xl">
                         <div className="flex items-center gap-6">
                            <i className="fas fa-microchip text-emerald-700 text-2xl"></i>
                            <div>
                               <p className="font-black text-xs uppercase tracking-widest text-emerald-950">Meena Tech Core</p>
-                              <p className="text-[10px] font-bold text-emerald-600">Secure Edge Processing Enabled</p>
+                              <p className="text-[10px] font-bold text-emerald-600">Geographical Clustering Enabled</p>
                            </div>
                         </div>
                         <i className="fas fa-check-circle text-emerald-500"></i>
@@ -191,7 +191,7 @@ const App: React.FC = () => {
               <div className="flex flex-col items-center justify-center min-h-[600px]">
                 <div className="w-24 h-24 border-8 border-emerald-950 border-t-orange-500 rounded-full animate-spin"></div>
                 <h2 className="text-3xl md:text-5xl font-black text-emerald-950 mt-12 tracking-tighter uppercase text-center">Optimizing Masterplan...</h2>
-                <p className="text-slate-400 font-black uppercase tracking-[0.3em] mt-6 text-xs text-center italic">Synchronizing via Secure Edge Server</p>
+                <p className="text-slate-400 font-black uppercase tracking-[0.3em] mt-6 text-xs text-center italic">Synchronizing Routes Geographically</p>
               </div>
             ) : currentItinerary ? (
               <ItineraryView 
